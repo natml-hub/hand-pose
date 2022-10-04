@@ -1,6 +1,23 @@
 # Hand Pose
 Hand pose detection from MediaPipe. This predictor implements the [hand pose model](https://google.github.io/mediapipe/solutions/hands.html), but not the palm detector. It only supports detecting a single hand in the image.
 
+## Installing Hand Pose
+Add the following items to your Unity project's `Packages/manifest.json`:
+```json
+{
+  "scopedRegistries": [
+    {
+      "name": "NatML",
+      "url": "https://registry.npmjs.com",
+      "scopes": ["ai.natml"]
+    }
+  ],
+  "dependencies": {
+    "ai.natml.vision.hand-pose": "1.0.0"
+  }
+}
+```
+
 ## Detecting Hand Pose in an Image
 First, create the predictor:
 ```csharp
