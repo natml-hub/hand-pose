@@ -13,7 +13,7 @@ Add the following items to your Unity project's `Packages/manifest.json`:
     }
   ],
   "dependencies": {
-    "ai.natml.vision.hand-pose": "1.0.0"
+    "ai.natml.vision.hand-pose": "1.0.1"
   }
 }
 ```
@@ -21,17 +21,13 @@ Add the following items to your Unity project's `Packages/manifest.json`:
 ## Detecting Hand Pose in an Image
 First, create the predictor:
 ```csharp
-// Fetch the model data from NatML
-var modelData = await MLModelData.FromHub("@natsuite/hand-pose");
-// Deserialize the model
-var model = modelData.Deserialize();
-// Create the predictor
-var predictor = new HandPosePredictor(model);
+// Create the hand pose predictor
+var predictor = await HandPosePredictor.Create();
 ```
 
 Then detect the hand pose in an image:
 ```csharp
-Texture2D image = ...; // Can also be a `WebCamTexture` or pixel buffer
+Texture2D image = ...;
 // Detect hand pose in an image
 HandPosePredictor.Hand hand = predictor.Predict(image);
 ```
@@ -42,8 +38,7 @@ HandPosePredictor.Hand hand = predictor.Predict(image);
 ## Quick Tips
 - Discover more ML models on [NatML Hub](https://hub.natml.ai).
 - See the [NatML documentation](https://docs.natml.ai/unity)
-- Join the [NatML community on Discord](https://hub.natml.ai/community)
-- Check out the [NatML blog](https://blog.natml.ai)
+- Join the [NatML community on Discord](https://natml.ai/community)
 - Contact us at [hi@natml.ai](mailto:hi@natml.ai)
 
 Thank you very much!

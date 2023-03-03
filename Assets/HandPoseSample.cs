@@ -1,70 +1,47 @@
 /* 
 *   Hand Pose
-*   Copyright (c) 2022 NatML Inc. All Rights Reserved.
+*   Copyright © 2023 NatML Inc. All Rights Reserved.
 */
 
 namespace NatML.Examples {
 
     using UnityEngine;
     using UnityEngine.UI;
-    using NatML;
-    using NatML.Devices;
-    using NatML.Devices.Outputs;
-    using NatML.Features;
+    using NatML.VideoKit;
     using NatML.Vision;
     using NatML.Visualizers;
 
-    [MLModelDataEmbed("@natsuite/hand-pose")]
-    public class HandPoseSample : MonoBehaviour {
+    public sealed class HandPoseSample : MonoBehaviour {
+
+        [Header(@"Camera")]
+        public VideoKitCameraManager cameraManager;
 
         [Header(@"UI")]
         public RawImage rawImage;
         public AspectRatioFitter aspectFitter;
         public HandPoseVisualizer visualizer;
 
-        private CameraDevice cameraDevice;
-        private TextureOutput cameraTextureOutput;
-
-        private MLModel model;
         private HandPosePredictor predictor;
 
-        async void Start () {
-            // Request camera permissions
-            var permissionStatus = await MediaDeviceQuery.RequestPermissions<CameraDevice>();
-            if (permissionStatus != PermissionStatus.Authorized) {
-                Debug.LogError(@"User did not grant camera permissions");
-                return;
-            }
-            // Get the default camera device
-            var query = new MediaDeviceQuery(MediaDeviceCriteria.CameraDevice);
-            cameraDevice = query.current as CameraDevice;
-            // Start the camera preview
-            cameraDevice.previewResolution = (640, 480);
-            cameraTextureOutput = new TextureOutput();
-            cameraDevice.StartRunning(cameraTextureOutput);
-            // Display the camera preview
-            var cameraTexture = await cameraTextureOutput;
-            rawImage.texture = cameraTexture;
-            aspectFitter.aspectRatio = (float)cameraTexture.width / cameraTexture.height;
+        private async void Start () {
             // Create the hand pose predictor
-            var modelData = await MLModelData.FromHub("@natsuite/hand-pose");
-            model = modelData.Deserialize();
-            predictor = new HandPosePredictor(model);
+            predictor = await HandPosePredictor.Create();
+            // Listen for camera frames
+            cameraManager.OnCameraFrame.AddListener(OnCameraFrame);
         }
 
-        void Update () {
-            // Check that the predictor has been created
-            if (predictor == null)
-                return;
+        private void OnCameraFrame (CameraFrame frame) {
             // Predict
-            var hand = predictor.Predict(cameraTextureOutput.texture);
+            var hand = predictor.Predict(frame);
             // Visualize
             visualizer.Render(hand);
         }
 
         void OnDisable () {
-            // Dispose the model
-            model?.Dispose();
+            // Stop listening for camera frames
+            cameraManager.OnCameraFrame.RemoveListener(OnCameraFrame);
+            // Dispose the predictor
+            predictor?.Dispose();
         }
     }
 }

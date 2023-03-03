@@ -1,11 +1,11 @@
 {
     "name": "ai.natml.vision.hand-pose",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "displayName": "Hand Pose",
     "description": "Hand pose detection from MediaPipe.",
     "unity": "2021.2",
     "dependencies": {
-        "ai.natml.natml": "1.0.18"
+        "ai.natml.natml": "1.1.3"
     },
     "keywords": [
         "natml",
